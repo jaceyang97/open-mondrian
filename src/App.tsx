@@ -52,7 +52,13 @@ const Header = styled.header`
 `;
 
 const TitleContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 15px;
   position: relative;
+`;
+
+const MainTitle = styled.span`
   cursor: help;
 `;
 
@@ -61,6 +67,25 @@ const Title = styled.h1`
   margin: 0;
   color: #ffffff;
   font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+const CreatedBy = styled.span`
+  font-size: 0.9rem;
+  color: #999;
+  font-weight: 300;
+  
+  a {
+    color: #fff;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    
+    &:hover {
+      opacity: 0.8;
+    }
+  }
 `;
 
 const HeaderRight = styled.div`
@@ -130,12 +155,6 @@ const TooltipSection = styled.p`
   &:last-child {
     margin-bottom: 0;
   }
-`;
-
-const TooltipAuthor = styled.p`
-  margin: 12px 0 0 0;
-  font-style: italic;
-  color: #666;
 `;
 
 const MainContent = styled.div`
@@ -234,18 +253,10 @@ const AppContent: React.FC = () => {
       en: 'Open Mondrian allows users to create artwork inspired by the Dutch painter Piet Mondrian (1872-1944), a pioneer of abstract art and founder of the De Stijl movement.',
       cn: '开源蒙德里安允许用户创建受荷兰画家皮特·蒙德里安（1872-1944）启发的艺术作品，他是抽象艺术的先驱和风格派运动的创始人。'
     },
-    features: {
-      en: 'Features customizable parameters including format, complexity, color palette, and line thickness. Can generate unique compositions and download them as SVG files.',
-      cn: '具有可自定义的参数，包括格式、复杂度、调色板和线条粗细。可以生成随机的构图并下载为SVG文件。'
-    },
     technology: {
       en: 'Built with React, TypeScript, and styled-components.',
       cn: '使用React、TypeScript和styled-components构建。'
     },
-    author: {
-      en: 'Created by Jace Yang (www.jaceyang.com)',
-      cn: '由Jace Yang创建 (www.jaceyang.com)'
-    }
   }), []);
 
   const generateComposition = useCallback(() => {
@@ -262,46 +273,6 @@ const AppContent: React.FC = () => {
   const handleConfigChange = useCallback((newConfig: MondrianConfig) => {
     setUiConfig(newConfig);
   }, []);
-  
-  const handleInfoClick = useCallback(() => {
-    setIsInfoModalOpen(true);
-  }, []);
-  
-  const handleDownloadClick = useCallback(() => {
-    if (!canvasRef.current) return;
-    
-    const svgElement = canvasRef.current.querySelector('svg');
-    if (!svgElement) return;
-    
-    try {
-      const svgClone = svgElement.cloneNode(true) as SVGElement;
-      
-      svgClone.setAttribute('width', generationConfig.canvasWidth.toString());
-      svgClone.setAttribute('height', generationConfig.canvasHeight.toString());
-      
-      const serializer = new XMLSerializer();
-      const svgData = serializer.serializeToString(svgClone);
-      const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-      
-      const url = URL.createObjectURL(svgBlob);
-      
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'mondrian-composition.svg';
-      link.style.display = 'none';
-      document.body.appendChild(link);
-      
-      requestAnimationFrame(() => {
-        link.click();
-        requestAnimationFrame(() => {
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
-        });
-      });
-    } catch (error) {
-      console.error('Error downloading SVG:', error);
-    }
-  }, [generationConfig]);
 
   const handleMouseEnter = useCallback(() => setShowTitleTooltip(true), []);
   const handleMouseLeave = useCallback(() => setShowTitleTooltip(false), []);
@@ -317,9 +288,7 @@ const AppContent: React.FC = () => {
     <TitleTooltip visible={showTitleTooltip}>
       <TooltipTitle>{projectBackground.title[language]}</TooltipTitle>
       <TooltipSection>{projectBackground.description[language]}</TooltipSection>
-      <TooltipSection>{projectBackground.features[language]}</TooltipSection>
       <TooltipSection>{projectBackground.technology[language]}</TooltipSection>
-      <TooltipAuthor>{projectBackground.author[language]}</TooltipAuthor>
     </TitleTooltip>
   ), [showTitleTooltip, projectBackground, language]);
 
@@ -332,14 +301,29 @@ const AppContent: React.FC = () => {
     </p>
   ), [t]);
 
+  const creditText = useMemo(() => ({
+    en: 'Created by',
+    cn: '作者：'
+  }), []);
+
   return (
     <AppContainer>
       <Header>
-        <TitleContainer 
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <Title>{t('createYourOwn')}</Title>
+        <TitleContainer>
+          <Title>
+            <MainTitle
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              {t('createYourOwn')}
+            </MainTitle>
+            <CreatedBy>
+              {creditText[language]}{' '}
+              <a href="https://www.jaceyang.com" target="_blank" rel="noopener noreferrer">
+                {language === 'cn' ? '杨泽群' : 'Jace Yang'}
+              </a>
+            </CreatedBy>
+          </Title>
           {tooltipContent}
         </TitleContainer>
         <HeaderRight>

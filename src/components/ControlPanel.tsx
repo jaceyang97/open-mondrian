@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { MondrianConfig, defaultConfig, complexityPresets } from '../utils/mondrianGenerator';
+import { MondrianConfig, complexityPresets } from '../utils/mondrianGenerator';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface ControlPanelProps {

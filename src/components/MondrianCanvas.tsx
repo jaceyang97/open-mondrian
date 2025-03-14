@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import { Cell, MondrianConfig } from '../utils/mondrianGenerator';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -120,25 +120,8 @@ const MondrianCanvas: React.FC<MondrianCanvasProps> = ({ cells, config }) => {
   const [showInfo, setShowInfo] = useState(false);
   const { t, language } = useLanguage();
 
-  // Render the canvas whenever cells or config changes
-  useEffect(() => {
-    renderCanvas();
-    
-    // Add resize event listener
-    const handleResize = () => {
-      renderCanvas();
-    };
-    
-    window.addEventListener('resize', handleResize);
-    
-    // Clean up
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [cells, config]);
-
   // Function to render the canvas
-  const renderCanvas = () => {
+  const renderCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -229,7 +212,24 @@ const MondrianCanvas: React.FC<MondrianCanvasProps> = ({ cells, config }) => {
         drawnEdges.set(leftEdgeKey, true);
       }
     });
-  };
+  }, [cells, config]);
+
+  // Render the canvas whenever cells or config changes
+  useEffect(() => {
+    renderCanvas();
+    
+    // Add resize event listener
+    const handleResize = () => {
+      renderCanvas();
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    // Clean up
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [renderCanvas]);
 
   // Format color palette for display
   const formatColorPalette = (palette: string[]) => {
