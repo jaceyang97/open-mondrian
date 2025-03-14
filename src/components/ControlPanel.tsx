@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { MondrianConfig, defaultConfig } from '../utils/mondrianGenerator';
+import { MondrianConfig, defaultConfig, complexityPresets } from '../utils/mondrianGenerator';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface ControlPanelProps {
   config: MondrianConfig;
@@ -9,128 +10,188 @@ interface ControlPanelProps {
 }
 
 const Panel = styled.div`
-  background-color: #f5f5f5;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  height: 100%;
+  overflow-y: auto;
+  font-family: 'Noto Sans SC', sans-serif;
 `;
 
-const ControlGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 15px;
+const SectionTitle = styled.h3<{ error?: boolean }>`
+  font-size: 1rem;
+  margin: 0 0 10px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid ${props => props.error ? '#D13C37' : '#ddd'};
+  color: ${props => props.error ? '#D13C37' : '#333'};
+  font-family: 'Noto Sans SC', sans-serif;
 `;
 
 const ControlGroup = styled.div`
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 `;
 
-const Label = styled.label`
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 500;
+// Format options
+const OptionGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
 `;
 
-const Input = styled.input`
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
+const OptionButton = styled.div<{ isSelected?: boolean }>`
+  border: 1px solid ${props => props.isSelected ? '#333' : '#ccc'};
   border-radius: 4px;
-`;
-
-const RangeContainer = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background-color: ${props => props.isSelected ? '#f0f0f0' : 'white'};
+  padding: 8px 0;
+  
+  &:hover {
+    border-color: #999;
+  }
 `;
 
-const RangeInput = styled.input`
-  flex: 1;
-  margin-right: 10px;
+const OptionLabel = styled.div<{ isSelected?: boolean }>`
+  text-align: center;
+  font-size: 0.8rem;
+  margin-top: 4px;
+  color: ${props => props.isSelected ? '#000' : '#666'};
+  font-family: 'Noto Sans SC', sans-serif;
 `;
 
-const RangeValue = styled.span`
-  min-width: 40px;
-  text-align: right;
-`;
-
-const ColorPaletteContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
-`;
-
-const ColorSwatch = styled.div<{ color: string }>`
-  width: 30px;
+// Format icons
+const FormatIcon = styled.div<{ ratio: string; isSelected?: boolean }>`
+  width: 40px;
   height: 30px;
-  background-color: ${props => props.color};
-  border: 1px solid #ccc;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    border: 1px solid ${props => props.isSelected ? '#000' : '#999'};
+    background-color: #f5f5f5;
+    
+    ${props => props.ratio === '1:1' && `
+      width: 30px;
+      height: 30px;
+      top: 0;
+      left: 5px;
+    `}
+    
+    ${props => props.ratio === '3:2' && `
+      width: 36px;
+      height: 24px;
+      top: 3px;
+      left: 2px;
+    `}
+    
+    ${props => props.ratio === '16:9' && `
+      width: 40px;
+      height: 22.5px;
+      top: 4px;
+      left: 0;
+    `}
+  }
+`;
+
+// Complexity icons
+const ComplexityIcon = styled.div<{ complexity: 'low' | 'mid' | 'high'; isSelected?: boolean }>`
+  width: 40px;
+  height: 30px;
+  display: grid;
+  grid-template-columns: ${props => 
+    props.complexity === 'low' ? '1fr' : 
+    props.complexity === 'mid' ? '1fr 1fr' : 
+    '1fr 1fr 1fr'
+  };
+  grid-template-rows: ${props => 
+    props.complexity === 'low' ? '1fr' : 
+    props.complexity === 'mid' ? '1fr 1fr' : 
+    '1fr 1fr 1fr'
+  };
+  gap: 2px;
+`;
+
+const ComplexityCell = styled.div<{ isSelected?: boolean }>`
+  background-color: ${props => props.isSelected ? '#000' : '#ddd'};
+`;
+
+// Color options
+const ColorOptions = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+`;
+
+const ColorSwatch = styled.div<{ color: string; isSelected: boolean }>`
+  width: 100%;
+  aspect-ratio: 1;
+  background-color: ${props => props.isSelected ? props.color : '#e0e0e0'};
+  border: 2px solid ${props => props.isSelected ? '#333' : 'transparent'};
   border-radius: 4px;
   cursor: pointer;
   position: relative;
   
-  &:hover::after {
-    content: '×';
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background-color: #ff4444;
-    color: white;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
+  &:hover {
+    border-color: #999;
   }
 `;
 
-const AddColorButton = styled.button`
-  width: 30px;
-  height: 30px;
-  background-color: white;
-  border: 1px dashed #ccc;
+const ColorLabel = styled.div<{ isSelected?: boolean }>`
+  text-align: center;
+  font-size: 0.75rem;
+  margin-top: 4px;
+  color: ${props => props.isSelected ? '#000' : '#666'};
+  font-family: 'Noto Sans SC', sans-serif;
+`;
+
+// Slider options
+const SliderOptions = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+`;
+
+const SliderOption = styled.div<{ isSelected: boolean }>`
+  border: 1px solid ${props => props.isSelected ? '#333' : '#ccc'};
   border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 8px 0;
+  text-align: center;
   cursor: pointer;
+  background-color: ${props => props.isSelected ? '#f0f0f0' : 'white'};
+  color: ${props => props.isSelected ? '#000' : '#666'};
+  font-family: 'Noto Sans SC', sans-serif;
   
   &:hover {
-    background-color: #f0f0f0;
+    border-color: #999;
   }
 `;
 
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-`;
-
-const Button = styled.button`
-  padding: 10px 20px;
-  background-color: #4285f4;
+const GenerateButton = styled.button<{ disabled?: boolean }>`
+  width: 100%;
+  padding: 12px;
+  background-color: ${props => props.disabled ? '#999' : '#333'};
   color: white;
   border: none;
   border-radius: 4px;
-  cursor: pointer;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   font-weight: 500;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  opacity: ${props => props.disabled ? 0.7 : 1};
+  font-family: 'Noto Sans SC', sans-serif;
   
   &:hover {
-    background-color: #3367d6;
+    background-color: ${props => props.disabled ? '#999' : '#555'};
   }
 `;
 
-const ResetButton = styled(Button)`
-  background-color: #f5f5f5;
-  color: #333;
-  border: 1px solid #ccc;
-  
-  &:hover {
-    background-color: #e0e0e0;
-  }
+const ButtonIcon = styled.span`
+  font-size: 1.2rem;
 `;
 
 const ControlPanel: React.FC<ControlPanelProps> = ({ 
@@ -138,207 +199,261 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   onConfigChange, 
   onGenerate 
 }) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type } = e.target;
+  const { t } = useLanguage();
+  
+  // Format options (aspect ratio)
+  const formats = [
+    { label: t('square'), key: 'square', width: 800, height: 800 },
+    { label: t('landscape'), key: 'landscape', width: 900, height: 600 },
+    { label: t('widescreen'), key: 'widescreen', width: 960, height: 540 }
+  ];
+  
+  // Complexity presets - using imported values
+  const complexityOptions = [
+    { label: t('low'), key: 'low', ...complexityPresets.low },
+    { label: t('mid'), key: 'mid', ...complexityPresets.medium },
+    { label: t('high'), key: 'high', ...complexityPresets.high }
+  ];
+  
+  // Color options - more muted colors
+  const colorOptions = [
+    { label: t('yellow'), key: 'yellow', color: '#E6C700' }, // Muted yellow
+    { label: t('red'), key: 'red', color: '#D13C37' },    // Muted red
+    { label: t('blue'), key: 'blue', color: '#3755A1' },   // Navy blue (updated)
+    { label: t('black'), key: 'black', color: '#333333' }   // Soft black
+  ];
+  
+  // Line thickness presets
+  const thicknessPresets = [
+    { label: t('thin'), key: 'thin', value: 3 },
+    { label: t('medium'), key: 'medium', value: 8 },
+    { label: t('thick'), key: 'thick', value: 15 }
+  ];
+  
+  // Color probability presets
+  const colorProbabilityPresets = [
+    { label: t('low'), key: 'low', value: 0.2 },
+    { label: t('medium'), key: 'medium', value: 0.4 },
+    { label: t('high'), key: 'high', value: 0.7 }
+  ];
+  
+  // State to track if there's an error with color selection
+  const [colorError, setColorError] = useState(false);
+  
+  // Get current format
+  const getCurrentFormat = () => {
+    const ratio = config.canvasWidth / config.canvasHeight;
+    if (Math.abs(ratio - 1) < 0.1) return t('square');
+    if (Math.abs(ratio - 1.5) < 0.1) return t('landscape');
+    if (Math.abs(ratio - 16/9) < 0.1) return t('widescreen');
+    return '';
+  };
+  
+  // Get current complexity
+  const getCurrentComplexity = () => {
+    if (config.minCellSize >= 100 && config.maxDepth <= 3) return t('low');
+    if (config.minCellSize <= 50 && config.maxDepth >= 5) return t('high');
+    return t('mid');
+  };
+  
+  // Get current line thickness
+  const getCurrentThickness = () => {
+    if (config.lineThickness <= 4) return t('thin');
+    if (config.lineThickness >= 12) return t('thick');
+    return t('medium');
+  };
+  
+  // Get current color probability
+  const getCurrentColorProbability = () => {
+    if (config.colorProbability <= 0.25) return t('low');
+    if (config.colorProbability >= 0.6) return t('high');
+    return t('medium');
+  };
+  
+  // Check if any non-white colors are selected
+  const hasSelectedColors = () => {
+    // Check if there are any colors other than white in the palette
+    return config.colorPalette.some(color => color !== '#FFFFFF');
+  };
+  
+  // Handle format change
+  const handleFormatChange = (width: number, height: number) => {
+    onConfigChange({
+      ...config,
+      canvasWidth: width,
+      canvasHeight: height
+    });
+  };
+  
+  // Handle complexity change
+  const handleComplexityChange = (preset: typeof complexityOptions[0]) => {
+    onConfigChange({
+      ...config,
+      minCellSize: preset.minCellSize,
+      maxDepth: preset.maxDepth,
+      splitProbability: preset.splitProb,
+      minSplits: preset.minSplits
+    });
+  };
+  
+  // Handle color toggle
+  const handleColorToggle = (color: string) => {
+    let newPalette = [...config.colorPalette];
     
-    let newValue: any = value;
-    if (type === 'number' || type === 'range') {
-      newValue = parseFloat(value);
+    // Don't allow removing white (background color)
+    if (color === '#FFFFFF') return;
+    
+    if (newPalette.includes(color)) {
+      // Remove the color
+      newPalette = newPalette.filter(c => c !== color);
+    } else {
+      // Add the color
+      newPalette.push(color);
     }
     
-    onConfigChange({
-      ...config,
-      [name]: newValue
-    });
-  };
-  
-  const handleColorChange = (index: number, color: string) => {
-    const newPalette = [...config.colorPalette];
-    newPalette[index] = color;
+    // Update the config with the new palette
     onConfigChange({
       ...config,
       colorPalette: newPalette
     });
+    
+    // Check if there are any colors selected after this change
+    setColorError(!newPalette.some(c => c !== '#FFFFFF'));
   };
   
-  const addColor = () => {
+  // Handle line thickness change
+  const handleThicknessChange = (thickness: number) => {
     onConfigChange({
       ...config,
-      colorPalette: [...config.colorPalette, '#FFFFFF']
+      lineThickness: thickness
     });
   };
   
-  const removeColor = (index: number) => {
-    if (config.colorPalette.length <= 2) return; // Keep at least 2 colors
-    const newPalette = [...config.colorPalette];
-    newPalette.splice(index, 1);
+  // Handle color probability change
+  const handleColorProbabilityChange = (probability: number) => {
     onConfigChange({
       ...config,
-      colorPalette: newPalette
+      colorProbability: probability
     });
   };
   
-  const resetConfig = () => {
-    onConfigChange(defaultConfig);
+  // Check if a color is selected (accounting for muted colors)
+  const isColorSelected = (color: string) => {
+    const palette = config.colorPalette;
+    
+    // Direct match
+    if (palette.includes(color)) return true;
+    
+    // For the blue color, check for any of the blue variants we've used
+    if (color === '#3755A1') {
+      return palette.includes('#3755A1') || 
+             palette.includes('#0A3B78') || 
+             palette.includes('#1E5AA8');
+    }
+    
+    return false;
+  };
+  
+  // Handle generate click with validation
+  const handleGenerate = () => {
+    if (hasSelectedColors()) {
+      setColorError(false);
+      onGenerate();
+    } else {
+      setColorError(true);
+    }
   };
   
   return (
     <Panel>
-      <h2>Mondrian Generator Controls</h2>
-      <ControlGrid>
-        <ControlGroup>
-          <Label>Canvas Width</Label>
-          <Input 
-            type="number" 
-            name="canvasWidth" 
-            value={config.canvasWidth} 
-            onChange={handleChange}
-            min="200"
-            max="2000"
-          />
-        </ControlGroup>
-        
-        <ControlGroup>
-          <Label>Canvas Height</Label>
-          <Input 
-            type="number" 
-            name="canvasHeight" 
-            value={config.canvasHeight} 
-            onChange={handleChange}
-            min="200"
-            max="2000"
-          />
-        </ControlGroup>
-        
-        <ControlGroup>
-          <Label>Minimum Cell Size: {config.minCellSize}px</Label>
-          <RangeContainer>
-            <RangeInput 
-              type="range" 
-              name="minCellSize" 
-              value={config.minCellSize} 
-              onChange={handleChange}
-              min="20"
-              max="200"
-            />
-            <RangeValue>{config.minCellSize}</RangeValue>
-          </RangeContainer>
-        </ControlGroup>
-        
-        <ControlGroup>
-          <Label>Maximum Cell Size: {config.maxCellSize}px</Label>
-          <RangeContainer>
-            <RangeInput 
-              type="range" 
-              name="maxCellSize" 
-              value={config.maxCellSize} 
-              onChange={handleChange}
-              min="50"
-              max="500"
-            />
-            <RangeValue>{config.maxCellSize}</RangeValue>
-          </RangeContainer>
-        </ControlGroup>
-        
-        <ControlGroup>
-          <Label>Line Thickness: {config.lineThickness}px</Label>
-          <RangeContainer>
-            <RangeInput 
-              type="range" 
-              name="lineThickness" 
-              value={config.lineThickness} 
-              onChange={handleChange}
-              min="1"
-              max="20"
-            />
-            <RangeValue>{config.lineThickness}</RangeValue>
-          </RangeContainer>
-        </ControlGroup>
-        
-        <ControlGroup>
-          <Label>Line Color</Label>
-          <Input 
-            type="color" 
-            name="lineColor" 
-            value={config.lineColor} 
-            onChange={handleChange}
-          />
-        </ControlGroup>
-        
-        <ControlGroup>
-          <Label>Color Probability: {(config.colorProbability * 100).toFixed(0)}%</Label>
-          <RangeContainer>
-            <RangeInput 
-              type="range" 
-              name="colorProbability" 
-              value={config.colorProbability} 
-              onChange={handleChange}
-              min="0"
-              max="1"
-              step="0.05"
-            />
-            <RangeValue>{(config.colorProbability * 100).toFixed(0)}%</RangeValue>
-          </RangeContainer>
-        </ControlGroup>
-        
-        <ControlGroup>
-          <Label>Split Probability: {(config.splitProbability * 100).toFixed(0)}%</Label>
-          <RangeContainer>
-            <RangeInput 
-              type="range" 
-              name="splitProbability" 
-              value={config.splitProbability} 
-              onChange={handleChange}
-              min="0"
-              max="1"
-              step="0.05"
-            />
-            <RangeValue>{(config.splitProbability * 100).toFixed(0)}%</RangeValue>
-          </RangeContainer>
-        </ControlGroup>
-        
-        <ControlGroup>
-          <Label>Max Depth: {config.maxDepth}</Label>
-          <RangeContainer>
-            <RangeInput 
-              type="range" 
-              name="maxDepth" 
-              value={config.maxDepth} 
-              onChange={handleChange}
-              min="1"
-              max="10"
-              step="1"
-            />
-            <RangeValue>{config.maxDepth}</RangeValue>
-          </RangeContainer>
-        </ControlGroup>
-      </ControlGrid>
-      
       <ControlGroup>
-        <Label>Color Palette</Label>
-        <ColorPaletteContainer>
-          {config.colorPalette.map((color, index) => (
-            <ColorSwatch 
-              key={index} 
-              color={color}
-              onClick={() => index > 0 && removeColor(index)}
+        <SectionTitle>{t('format')}</SectionTitle>
+        <OptionGrid>
+          {formats.map(format => (
+            <OptionButton 
+              key={format.key}
+              isSelected={getCurrentFormat() === format.label}
+              onClick={() => handleFormatChange(format.width, format.height)}
             >
-              <input 
-                type="color"
-                value={color}
-                onChange={(e) => handleColorChange(index, e.target.value)}
-                style={{ opacity: 0, width: '100%', height: '100%', cursor: 'pointer' }}
-              />
-            </ColorSwatch>
+              <FormatIcon ratio={format.label} isSelected={getCurrentFormat() === format.label} />
+              <OptionLabel isSelected={getCurrentFormat() === format.label}>{format.label}</OptionLabel>
+            </OptionButton>
           ))}
-          <AddColorButton onClick={addColor}>+</AddColorButton>
-        </ColorPaletteContainer>
+        </OptionGrid>
       </ControlGroup>
       
-      <ButtonContainer>
-        <ResetButton onClick={resetConfig}>Reset</ResetButton>
-        <Button onClick={onGenerate}>Generate</Button>
-      </ButtonContainer>
+      <ControlGroup>
+        <SectionTitle>{t('complexity')}</SectionTitle>
+        <OptionGrid>
+          {complexityOptions.map(preset => (
+            <OptionButton 
+              key={preset.key}
+              isSelected={getCurrentComplexity() === preset.label}
+              onClick={() => handleComplexityChange(preset)}
+            >
+              <ComplexityIcon complexity={preset.key as 'low' | 'mid' | 'high'} isSelected={getCurrentComplexity() === preset.label}>
+                {Array.from({ length: preset.key === 'low' ? 1 : preset.key === 'mid' ? 4 : 9 }).map((_, i) => (
+                  <ComplexityCell key={i} isSelected={getCurrentComplexity() === preset.label} />
+                ))}
+              </ComplexityIcon>
+              <OptionLabel isSelected={getCurrentComplexity() === preset.label}>{preset.label}</OptionLabel>
+            </OptionButton>
+          ))}
+        </OptionGrid>
+      </ControlGroup>
+      
+      <ControlGroup>
+        <SectionTitle error={colorError}>{t('colors')} {colorError && t('selectAtLeastOne')}</SectionTitle>
+        <ColorOptions>
+          {colorOptions.map(option => (
+            <div key={option.key}>
+              <ColorSwatch 
+                color={option.color}
+                isSelected={isColorSelected(option.color)}
+                onClick={() => handleColorToggle(option.color)}
+              />
+              <ColorLabel isSelected={isColorSelected(option.color)}>{option.label}</ColorLabel>
+            </div>
+          ))}
+        </ColorOptions>
+      </ControlGroup>
+      
+      <ControlGroup>
+        <SectionTitle>{t('colorAmount')}</SectionTitle>
+        <SliderOptions>
+          {colorProbabilityPresets.map(preset => (
+            <SliderOption 
+              key={preset.key}
+              isSelected={getCurrentColorProbability() === preset.label}
+              onClick={() => handleColorProbabilityChange(preset.value)}
+            >
+              {preset.label}
+            </SliderOption>
+          ))}
+        </SliderOptions>
+      </ControlGroup>
+      
+      <ControlGroup>
+        <SectionTitle>{t('lineThickness')}</SectionTitle>
+        <SliderOptions>
+          {thicknessPresets.map(preset => (
+            <SliderOption 
+              key={preset.key}
+              isSelected={getCurrentThickness() === preset.label}
+              onClick={() => handleThicknessChange(preset.value)}
+            >
+              {preset.label}
+            </SliderOption>
+          ))}
+        </SliderOptions>
+      </ControlGroup>
+      
+      <GenerateButton 
+        onClick={handleGenerate} 
+        disabled={!hasSelectedColors()}
+      >
+        <ButtonIcon>✨</ButtonIcon> {t('generate')}
+      </GenerateButton>
     </Panel>
   );
 };

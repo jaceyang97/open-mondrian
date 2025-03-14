@@ -1,24 +1,22 @@
-# Open Mondrian
+# 🎨 Open Mondrian
 
 > Mondrian hoped to convey the idea of the eternal movement of life in his works. He believed that this goal could be subtly achieved by changing the width of black lines. He reasoned that the thinner the line, the faster the eye "reads" its trajectory, and vice versa. By adjusting the width, he could manipulate lines much like pressing the accelerator of a car. This, in turn, would help him achieve his ultimate goal: to imbue his paintings with a sense of "dynamic balance."
 > 
-> -- Not Mondrian
+> -- Will Gompertz, "What Are You Looking At?"
 
-## About
+## 📖 About
 
-Open Mondrian is a React application that allows users to generate Mondrian-style artwork by adjusting various parameters. Piet Mondrian's work, especially his Composition series, can be viewed as early generative art, with carefully balanced lines, rectangles, and primary colors.
+Open Mondrian lets you create artwork inspired by Piet Mondrian's Composition series. Adjust various parameters to explore the principles behind his abstract compositions.
 
-This project lets you explore the principles behind Mondrian's compositions by creating your own variations with customizable settings.
+## ✨ Features
 
-## Features
+- Generate compositions with a recursive algorithm
+- Customize format, complexity, colors, and line thickness
+- Multilingual support (English and Chinese)
+- Download creations as SVG files
+- Optimized for performance
 
-- Generate Mondrian-style compositions with a recursive algorithm
-- Adjust canvas dimensions, cell sizes, and line thickness
-- Customize the color palette
-- Control the probability of colored cells and cell splitting
-- Instantly regenerate compositions with your settings
-
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 
@@ -27,51 +25,34 @@ This project lets you explore the principles behind Mondrian's compositions by c
 
 ### Installation
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/open-mondrian.git
-   cd open-mondrian
-   ```
+```bash
+git clone https://github.com/jaceyang97/open-mondrian.git
+cd open-mondrian
+npm install
+npm start
+```
 
-2. Install dependencies:
-   ```
-   npm install
-   ```
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-3. Start the development server:
-   ```
-   npm start
-   ```
+## ⚙️ How It Works
 
-4. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+1. Starts with a single cell representing the canvas
+2. Recursively splits cells horizontally or vertically
+3. Assigns colors based on palette and probability
+4. Renders cells and grid lines on canvas
 
-## How It Works
+## 💻 Technical Details
 
-The Mondrian generator works by:
+- Built with React and TypeScript
+- Styled with styled-components
+- Optimized with React.memo, useMemo, and useCallback
+- Responsive design for mobile and desktop
+- Multilingual support with context API
 
-1. Starting with a single cell representing the entire canvas
-2. Recursively splitting cells either horizontally or vertically
-3. Deciding whether to split based on probability and minimum cell size
-4. Assigning colors to cells based on a color palette and probability
-5. Rendering the resulting cells and grid lines on a canvas
+## 📄 License
 
-## Customization
+MIT License
 
-You can adjust various parameters to create different compositions:
-
-- **Canvas Width/Height**: Set the dimensions of your artwork
-- **Min/Max Cell Size**: Control the size range of rectangles
-- **Line Thickness**: Adjust the width of the black grid lines
-- **Line Color**: Change the color of the grid lines
-- **Color Palette**: Add or remove colors from the palette
-- **Color Probability**: Control how many cells receive color
-- **Split Probability**: Adjust how likely cells are to be divided
-- **Max Depth**: Limit the recursion depth for cell splitting
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
+## 🙏 Acknowledgments
 
 Inspired by [mondriangenerator.io](https://www.mondriangenerator.io/) and the works of Piet Mondrian.
