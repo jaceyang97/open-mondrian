@@ -15,8 +15,8 @@ interface Translations {
 export const translations: Translations = {
   // App title and header
   appTitle: {
-    en: 'Mondrian Generator - Open Source Software',
-    cn: '蒙德里安生成器 - 开源软件'
+    en: 'Open Mondrian',
+    cn: '开源蒙德里安'
   },
   createYourOwn: {
     en: 'Create your own Mondrian',
@@ -51,6 +51,18 @@ export const translations: Translations = {
   lineThickness: {
     en: 'Line Thickness',
     cn: '线条粗细'
+  },
+  prominentColor: {
+    en: 'Prominent Color',
+    cn: '主要颜色'
+  },
+  prominentColorBoost: {
+    en: 'Prominence Level',
+    cn: '主要程度'
+  },
+  none: {
+    en: 'None',
+    cn: '无'
   },
   
   // Format options
@@ -97,6 +109,26 @@ export const translations: Translations = {
   black: {
     en: 'Black',
     cn: '黑色'
+  },
+  orange: {
+    en: 'Orange',
+    cn: '橙色'
+  },
+  purple: {
+    en: 'Purple',
+    cn: '紫色'
+  },
+  cyan: {
+    en: 'Cyan',
+    cn: '青色'
+  },
+  green: {
+    en: 'Green',
+    cn: '绿色'
+  },
+  moreColors: {
+    en: 'More Colors',
+    cn: '更多颜色'
   },
   
   // Slider options

@@ -231,16 +231,16 @@ const AppContent: React.FC = () => {
       cn: '关于此项目'
     },
     description: {
-      en: 'Open Mondrian is an interactive web application that allows users to create artwork inspired by the Dutch painter Piet Mondrian (1872-1944), a pioneer of abstract art and founder of the De Stijl movement.',
-      cn: '开源蒙德里安是一个交互式网络应用程序，允许用户创建受荷兰画家皮特·蒙德里安（1872-1944）启发的艺术作品，他是抽象艺术的先驱和风格派运动的创始人。'
+      en: 'Open Mondrian allows users to create artwork inspired by the Dutch painter Piet Mondrian (1872-1944), a pioneer of abstract art and founder of the De Stijl movement.',
+      cn: '开源蒙德里安允许用户创建受荷兰画家皮特·蒙德里安（1872-1944）启发的艺术作品，他是抽象艺术的先驱和风格派运动的创始人。'
     },
     features: {
-      en: 'This application features customizable parameters including format, complexity, color palette, and line thickness. Users can generate unique compositions and download them as SVG files.',
-      cn: '该应用程序具有可自定义的参数，包括格式、复杂度、调色板和线条粗细。用户可以生成独特的构图并将其下载为SVG文件。'
+      en: 'Features customizable parameters including format, complexity, color palette, and line thickness. Can generate unique compositions and download them as SVG files.',
+      cn: '具有可自定义的参数，包括格式、复杂度、调色板和线条粗细。可以生成随机的构图并下载为SVG文件。'
     },
     technology: {
-      en: 'Built with React, TypeScript, and styled-components, this Open Source Software project demonstrates modern front-end development practices with a focus on user experience and responsive design.',
-      cn: '使用React、TypeScript和styled-components构建，这个开源软件（Open Source Software）项目展示了现代前端开发实践，注重用户体验和响应式设计。'
+      en: 'Built with React, TypeScript, and styled-components.',
+      cn: '使用React、TypeScript和styled-components构建。'
     },
     author: {
       en: 'Created by Jace Yang (www.jaceyang.com)',

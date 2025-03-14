@@ -39,7 +39,7 @@ const LanguageSelector: React.FC = () => {
   const handleLanguageChange = (lang: Language) => {
     setLanguage(lang);
     // Update the document title based on language
-    document.title = lang === 'en' ? 'Mondrian Generator - Open Source Software' : '蒙德里安生成器 - 开源软件';
+    document.title = lang === 'en' ? 'Open Mondrian' : '开源蒙德里安';
   };
   
   return (

@@ -1,4 +1,4 @@
-// Types for Mondrian generator
+// Types for Open Mondrian
 export interface MondrianConfig {
   canvasWidth: number;
   canvasHeight: number;
@@ -12,6 +12,8 @@ export interface MondrianConfig {
   maxDepth: number; // Maximum recursion depth for splitting
   minSplits?: number; // Minimum number of splits to ensure
   partialLinesProbability: number; // Probability of creating partial lines
+  prominentColor?: string; // The color that should appear more frequently
+  prominentColorBoost: number; // How much to boost the prominent color (0-1)
 }
 
 export interface Cell {
@@ -42,7 +44,11 @@ export const mutedColors = {
   yellow: '#E6C700',
   red: '#D13C37',
   blue: '#3755A1',
-  black: '#333333'
+  black: '#333333',
+  orange: '#E67E22',
+  purple: '#9B59B6',
+  cyan: '#3498DB',
+  green: '#27AE60'
 };
 
 // Default configuration
@@ -64,7 +70,9 @@ export const defaultConfig: MondrianConfig = {
   splitProbability: complexityPresets.low.splitProb,
   maxDepth: complexityPresets.low.maxDepth,
   minSplits: complexityPresets.low.minSplits,
-  partialLinesProbability: 0.4 // 40% chance of creating partial lines
+  partialLinesProbability: 0.4, // 40% chance of creating partial lines
+  prominentColor: undefined,
+  prominentColorBoost: 0.5
 };
 
 // Helper function to get a random integer between min and max (inclusive)
@@ -73,10 +81,18 @@ const getRandomInt = (min: number, max: number): number => {
 };
 
 // Helper function to get a random color from the palette
-const getRandomColor = (palette: string[], colorProbability: number): string => {
+const getRandomColor = (palette: string[], colorProbability: number, prominentColor?: string, prominentColorBoost: number = 0.5): string => {
   // First color in palette is considered the background/default color
   if (Math.random() > colorProbability) {
     return palette[0]; // Default color (usually white)
+  }
+  
+  // If a prominent color is set and it's in the palette (not the background color)
+  if (prominentColor && palette.includes(prominentColor) && prominentColor !== palette[0]) {
+    // Use the prominentColorBoost to determine if we should use the prominent color
+    if (Math.random() < prominentColorBoost) {
+      return prominentColor;
+    }
   }
   
   // Pick a random color from the rest of the palette
@@ -109,7 +125,7 @@ const splitCell = (
       Math.random() > config.splitProbability
     )
   ) {
-    return [{ ...cell, color: getRandomColor(config.colorPalette, config.colorProbability) }];
+    return [{ ...cell, color: getRandomColor(config.colorPalette, config.colorProbability, config.prominentColor, config.prominentColorBoost) }];
   }
 
   // Decide whether to split into 2 or 4 parts

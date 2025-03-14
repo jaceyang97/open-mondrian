@@ -83,8 +83,8 @@ interface InfoModalProps {
 // Add translations for the modal content
 const infoContent = {
   title: {
-    en: 'About Mondrian Generator',
-    cn: '关于蒙德里安生成器'
+    en: 'About Open Mondrian',
+    cn: '关于开源蒙德里安'
   },
   description: {
     en: `This open-source application allows you to create artwork inspired by Piet Mondrian's neoplasticism style. 

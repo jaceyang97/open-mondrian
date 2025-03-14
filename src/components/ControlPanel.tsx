@@ -10,38 +10,38 @@ interface ControlPanelProps {
 }
 
 const Panel = styled.div`
-  padding: 15px;
+  padding: 12px;
   height: 100%;
   overflow-y: auto;
   font-family: 'Noto Sans SC', sans-serif;
   
   @media (max-width: 768px) {
-    padding: 10px;
+    padding: 8px;
     height: auto;
     overflow: visible;
   }
 `;
 
 const SectionTitle = styled.h3<{ error?: boolean }>`
-  font-size: 1rem;
-  margin: 0 0 10px 0;
-  padding-bottom: 6px;
+  font-size: 0.95rem;
+  margin: 0 0 8px 0;
+  padding-bottom: 4px;
   border-bottom: 1px solid ${props => props.error ? '#D13C37' : '#ddd'};
   color: ${props => props.error ? '#D13C37' : '#333'};
   font-family: 'Noto Sans SC', sans-serif;
   
   @media (max-width: 768px) {
-    font-size: 0.9rem;
-    margin: 0 0 6px 0;
-    padding-bottom: 4px;
+    font-size: 0.85rem;
+    margin: 0 0 4px 0;
+    padding-bottom: 3px;
   }
 `;
 
 const ControlGroup = styled.div`
-  margin-bottom: 20px;
+  margin-bottom: 14px;
   
   @media (max-width: 768px) {
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
 `;
 
@@ -49,10 +49,10 @@ const ControlGroup = styled.div`
 const OptionGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  gap: 6px;
   
   @media (max-width: 768px) {
-    gap: 5px;
+    gap: 4px;
   }
 `;
 
@@ -65,14 +65,14 @@ const OptionButton = styled.div<{ isSelected?: boolean }>`
   justify-content: center;
   cursor: pointer;
   background-color: ${props => props.isSelected ? '#f0f0f0' : 'white'};
-  padding: 8px 0;
+  padding: 6px 0;
   
   &:hover {
     border-color: #999;
   }
   
   @media (max-width: 768px) {
-    padding: 5px 0;
+    padding: 4px 0;
   }
 `;
 
@@ -150,10 +150,10 @@ const ComplexityCell = styled.div<{ isSelected?: boolean }>`
 const ColorOptions = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  gap: 6px;
   
   @media (max-width: 768px) {
-    gap: 5px;
+    gap: 4px;
   }
 `;
 
@@ -161,7 +161,7 @@ const ColorSwatch = styled.div<{ color: string; isSelected: boolean }>`
   width: 100%;
   aspect-ratio: 1;
   background-color: ${props => props.isSelected ? props.color : '#e0e0e0'};
-  border: 2px solid ${props => props.isSelected ? '#333' : 'transparent'};
+  border: 1px solid ${props => props.isSelected ? '#333' : 'transparent'};
   border-radius: 4px;
   cursor: pointer;
   position: relative;
@@ -177,14 +177,14 @@ const ColorSwatch = styled.div<{ color: string; isSelected: boolean }>`
 
 const ColorLabel = styled.div<{ isSelected?: boolean }>`
   text-align: center;
-  font-size: 0.75rem;
-  margin-top: 4px;
+  font-size: 0.7rem;
+  margin-top: 2px;
   color: ${props => props.isSelected ? '#000' : '#666'};
   font-family: 'Noto Sans SC', sans-serif;
   
   @media (max-width: 768px) {
     font-size: 0.65rem;
-    margin-top: 2px;
+    margin-top: 1px;
   }
 `;
 
@@ -192,17 +192,17 @@ const ColorLabel = styled.div<{ isSelected?: boolean }>`
 const SliderOptions = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  gap: 6px;
   
   @media (max-width: 768px) {
-    gap: 5px;
+    gap: 4px;
   }
 `;
 
 const SliderOption = styled.div<{ isSelected: boolean }>`
   border: 1px solid ${props => props.isSelected ? '#333' : '#ccc'};
   border-radius: 4px;
-  padding: 8px 0;
+  padding: 6px 0;
   text-align: center;
   cursor: pointer;
   background-color: ${props => props.isSelected ? '#f0f0f0' : 'white'};
@@ -214,21 +214,108 @@ const SliderOption = styled.div<{ isSelected: boolean }>`
   }
   
   @media (max-width: 768px) {
-    padding: 5px 0;
+    padding: 4px 0;
     font-size: 0.8rem;
+  }
+`;
+
+const Slider = styled.input`
+  width: 100%;
+  margin: 8px 0;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 5px;
+  background: #ddd;
+  border-radius: 3px;
+  outline: none;
+  
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: #333;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  
+  &::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: #333;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  
+  @media (max-width: 768px) {
+    margin: 6px 0;
+  }
+`;
+
+const ColorDropdown = styled.select`
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
+  font-family: 'Noto Sans SC', sans-serif;
+  
+  &:focus {
+    outline: none;
+    border-color: #333;
+  }
+  
+  @media (max-width: 768px) {
+    padding: 4px;
+    font-size: 0.85rem;
+  }
+`;
+
+const SliderValue = styled.div`
+  text-align: center;
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 3px;
+  
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
+`;
+
+const MoreColorsButton = styled.button`
+  width: 100%;
+  padding: 5px 0;
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  margin-top: 6px;
+  font-family: 'Noto Sans SC', sans-serif;
+  
+  &:hover {
+    background-color: #e0e0e0;
+    border-color: #999;
+  }
+  
+  @media (max-width: 768px) {
+    font-size: 0.7rem;
+    padding: 3px 0;
+    margin-top: 4px;
   }
 `;
 
 const GenerateButton = styled.button<{ disabled?: boolean }>`
   width: 100%;
-  padding: 12px;
+  padding: 10px;
   background-color: ${props => props.disabled ? '#999' : '#333'};
   color: white;
   border: none;
   border-radius: 4px;
   cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   font-weight: 500;
-  margin-top: 20px;
+  margin-top: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -241,9 +328,9 @@ const GenerateButton = styled.button<{ disabled?: boolean }>`
   }
   
   @media (max-width: 768px) {
-    padding: 8px;
-    margin-top: 10px;
-    font-size: 0.9rem;
+    padding: 7px;
+    margin-top: 8px;
+    font-size: 0.85rem;
   }
 `;
 
@@ -257,6 +344,11 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   onGenerate 
 }) => {
   const { t } = useLanguage();
+  
+  // State to track if there's an error with color selection
+  const [colorError, setColorError] = useState(false);
+  // State to track if additional colors are shown
+  const [showMoreColors, setShowMoreColors] = useState(false);
   
   // Format options (aspect ratio)
   const formats = [
@@ -280,6 +372,14 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     { label: t('black'), key: 'black', color: '#333333' }   // Soft black
   ];
   
+  // Additional color options
+  const additionalColorOptions = [
+    { label: t('orange'), key: 'orange', color: '#E67E22' }, // Muted orange
+    { label: t('purple'), key: 'purple', color: '#9B59B6' }, // Muted purple
+    { label: t('cyan'), key: 'cyan', color: '#3498DB' },     // Muted cyan
+    { label: t('green'), key: 'green', color: '#27AE60' }    // Muted green
+  ];
+  
   // Line thickness presets
   const thicknessPresets = [
     { label: t('thin'), key: 'thin', value: 3 },
@@ -293,9 +393,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     { label: t('medium'), key: 'medium', value: 0.4 },
     { label: t('high'), key: 'high', value: 0.7 }
   ];
-  
-  // State to track if there's an error with color selection
-  const [colorError, setColorError] = useState(false);
   
   // Get current format
   const getCurrentFormat = () => {
@@ -394,6 +491,24 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     });
   };
   
+  // Handle prominent color change
+  const handleProminentColorChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    onConfigChange({
+      ...config,
+      prominentColor: value === 'none' ? undefined : value
+    });
+  };
+  
+  // Handle prominent color boost change
+  const handleProminentColorBoostChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(event.target.value);
+    onConfigChange({
+      ...config,
+      prominentColorBoost: value
+    });
+  };
+  
   // Check if a color is selected (accounting for muted colors)
   const isColorSelected = (color: string) => {
     const palette = config.colorPalette;
@@ -406,6 +521,18 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       return palette.includes('#3755A1') || 
              palette.includes('#0A3B78') || 
              palette.includes('#1E5AA8');
+    }
+    
+    // For cyan, check for similar blue-cyan variants
+    if (color === '#3498DB') {
+      return palette.includes('#3498DB') || 
+             palette.includes('#2980B9');
+    }
+    
+    // For green, check for similar green variants
+    if (color === '#27AE60') {
+      return palette.includes('#27AE60') || 
+             palette.includes('#2ECC71');
     }
     
     return false;
@@ -473,7 +600,53 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
             </div>
           ))}
         </ColorOptions>
+        
+        {showMoreColors && (
+          <ColorOptions style={{ marginTop: '5px' }}>
+            {additionalColorOptions.map(option => (
+              <div key={option.key}>
+                <ColorSwatch 
+                  color={option.color}
+                  isSelected={isColorSelected(option.color)}
+                  onClick={() => handleColorToggle(option.color)}
+                />
+                <ColorLabel isSelected={isColorSelected(option.color)}>{option.label}</ColorLabel>
+              </div>
+            ))}
+          </ColorOptions>
+        )}
+        
+        <MoreColorsButton onClick={() => setShowMoreColors(!showMoreColors)}>
+          {showMoreColors ? '▲ ' : '▼ '}{t('moreColors')}
+        </MoreColorsButton>
       </ControlGroup>
+      
+      <ControlGroup>
+        <SectionTitle>{t('prominentColor')}</SectionTitle>
+        <ColorDropdown value={config.prominentColor || 'none'} onChange={handleProminentColorChange}>
+          <option value="none">{t('none')}</option>
+          {[...colorOptions, ...additionalColorOptions].map(option => (
+            <option key={option.key} value={option.color}>
+              {option.label}
+            </option>
+          ))}
+        </ColorDropdown>
+      </ControlGroup>
+      
+      {config.prominentColor && (
+        <ControlGroup>
+          <SectionTitle>{t('prominentColorBoost')}</SectionTitle>
+          <Slider
+            type="range"
+            value={config.prominentColorBoost}
+            onChange={handleProminentColorBoostChange}
+            min="0"
+            max="1"
+            step="0.05"
+          />
+          <SliderValue>{Math.round(config.prominentColorBoost * 100)}%</SliderValue>
+        </ControlGroup>
+      )}
       
       <ControlGroup>
         <SectionTitle>{t('colorAmount')}</SectionTitle>

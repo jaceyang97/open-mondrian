@@ -244,10 +244,27 @@ const MondrianCanvas: React.FC<MondrianCanvasProps> = ({ cells, config }) => {
       else if (color === '#D13C37') name = language === 'en' ? 'Red' : '红色';
       else if (color === '#3755A1' || color === '#0A3B78' || color === '#1E5AA8') name = language === 'en' ? 'Blue' : '蓝色';
       else if (color === '#333333') name = language === 'en' ? 'Black' : '黑色';
+      else if (color === '#E67E22') name = language === 'en' ? 'Orange' : '橙色';
+      else if (color === '#9B59B6') name = language === 'en' ? 'Purple' : '紫色';
+      else if (color === '#3498DB') name = language === 'en' ? 'Cyan' : '青色';
+      else if (color === '#27AE60') name = language === 'en' ? 'Green' : '绿色';
       else name = color; // Use hex if no name match
       
       return name;
     }).join(', ');
+  };
+
+  // Format a single color name
+  const formatColorName = (color: string): string => {
+    if (color === '#E6C700') return language === 'en' ? 'Yellow' : '黄色';
+    if (color === '#D13C37') return language === 'en' ? 'Red' : '红色';
+    if (color === '#3755A1' || color === '#0A3B78' || color === '#1E5AA8') return language === 'en' ? 'Blue' : '蓝色';
+    if (color === '#333333') return language === 'en' ? 'Black' : '黑色';
+    if (color === '#E67E22') return language === 'en' ? 'Orange' : '橙色';
+    if (color === '#9B59B6') return language === 'en' ? 'Purple' : '紫色';
+    if (color === '#3498DB') return language === 'en' ? 'Cyan' : '青色';
+    if (color === '#27AE60') return language === 'en' ? 'Green' : '绿色';
+    return color; // Use hex if no name match
   };
 
   // Format complexity level
@@ -347,6 +364,14 @@ const MondrianCanvas: React.FC<MondrianCanvasProps> = ({ cells, config }) => {
                   <InfoLabel>{language === 'en' ? 'Line Thickness:' : '线条粗细:'}</InfoLabel>
                   <InfoValue>{getLineThickness()} ({config.lineThickness}px)</InfoValue>
                 </InfoRow>
+                {config.prominentColor && (
+                  <InfoRow>
+                    <InfoLabel>{language === 'en' ? 'Prominent Color:' : '主要颜色:'}</InfoLabel>
+                    <InfoValue>
+                      {formatColorName(config.prominentColor)} ({Math.round(config.prominentColorBoost * 100)}%)
+                    </InfoValue>
+                  </InfoRow>
+                )}
                 <InfoRow>
                   <InfoLabel>{language === 'en' ? 'Total Cells:' : '总单元格数:'}</InfoLabel>
                   <InfoValue>{cells.length} {language === 'en' ? 'rectangles' : '矩形'}</InfoValue>
