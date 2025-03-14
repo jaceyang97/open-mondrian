@@ -1,8 +1,17 @@
 # 🎨 Open Mondrian
+<p align="center">
+  <a href="https://open-mondrian.vercel.app/">
+    <img src="./github.png" alt="Open Mondrian Screenshot" width="600">
+  </a>
+</p>
 
 > Mondrian hoped to convey the idea of the eternal movement of life in his works. He believed that this goal could be subtly achieved by changing the width of black lines. He reasoned that the thinner the line, the faster the eye "reads" its trajectory, and vice versa. By adjusting the width, he could manipulate lines much like pressing the accelerator of a car. This, in turn, would help him achieve his ultimate goal: to imbue his paintings with a sense of "dynamic balance."
 > 
 > -- Will Gompertz, "What Are You Looking At?"
+
+## 🌐 Live Demo
+
+Check out the live application on [Vercel](https://open-mondrian.vercel.app/)
 
 ## 📖 About
 
@@ -55,4 +64,4 @@ MIT License
 
 ## 🙏 Acknowledgments
 
-Inspired by [mondriangenerator.io](https://www.mondriangenerator.io/) and the works of Piet Mondrian.
+Inspired by [mondriangenerator.io](https://www.mondriangenerator.io/) and the works of Piet Mondrian, of course.
