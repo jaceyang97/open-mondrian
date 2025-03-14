@@ -5,7 +5,6 @@
   "description": "An interactive web application to create Mondrian-style artwork",
   "author": "Jace Yang <jaceyang97@gmail.com>",
   "license": "MIT",
-  "homepage": "https://jaceyang97.github.io/open-mondrian",
   "repository": {
     "type": "git",
     "url": "https://github.com/jaceyang97/open-mondrian"
