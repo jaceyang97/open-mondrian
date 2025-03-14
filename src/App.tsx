@@ -1,8 +1,24 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspense } from 'react';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import LanguageSelector from './components/LanguageSelector';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import { generateMondrian, MondrianConfig, defaultConfig, Cell, complexityPresets, mutedColors } from './utils/mondrianGenerator';
+import { Helmet } from 'react-helmet';
+
+// Global styles
+const GlobalStyle = createGlobalStyle`
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    
+    @media (max-width: 768px) {
+      overflow-y: auto;
+      overflow-x: hidden;
+      height: auto;
+    }
+  }
+`;
 
 // Lazy load components for better initial load performance
 const MondrianCanvas = lazy(() => import('./components/MondrianCanvas'));
@@ -18,6 +34,13 @@ const AppContainer = styled.div`
   flex-direction: column;
   font-family: 'Noto Sans SC', 'Roboto', 'Segoe UI', Arial, sans-serif;
   overflow: hidden;
+  
+  @media (max-width: 768px) {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
 `;
 
 const Header = styled.header`
@@ -123,6 +146,10 @@ const MainContent = styled.div`
   
   @media (max-width: 768px) {
     flex-direction: column;
+    height: auto;
+    min-height: 0;
+    flex: 1 0 auto;
+    overflow: visible;
   }
 `;
 
@@ -136,6 +163,8 @@ const LeftPanel = styled.div`
     width: 100%;
     border-right: none;
     border-bottom: 1px solid #e0e0e0;
+    height: auto;
+    overflow: visible;
   }
 `;
 
@@ -148,6 +177,13 @@ const RightPanel = styled.div`
   padding: 20px;
   overflow: auto;
   min-height: 0;
+  
+  @media (max-width: 768px) {
+    height: auto;
+    min-height: auto;
+    padding: 10px;
+    overflow: visible;
+  }
 `;
 
 const Footer = styled.footer`
@@ -163,6 +199,8 @@ const Footer = styled.footer`
   
   @media (max-width: 768px) {
     white-space: normal;
+    padding: 8px 10px;
+    font-size: 0.8rem;
   }
 `;
 
@@ -356,6 +394,10 @@ const MemoizedAppContent = React.memo(AppContent);
 const App: React.FC = () => {
   return (
     <LanguageProvider>
+      <Helmet>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+      </Helmet>
+      <GlobalStyle />
       <MemoizedAppContent />
     </LanguageProvider>
   );

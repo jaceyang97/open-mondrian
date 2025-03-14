@@ -1,7 +1,7 @@
 # 🎨 Open Mondrian
 <p align="center">
   <a href="https://open-mondrian.vercel.app/">
-    <img src="./github.png" alt="Open Mondrian Screenshot" width="600">
+    <img src="./github.png" alt="Open Mondrian Screenshot" width="100%" style="max-width: 800px; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
   </a>
 </p>
 

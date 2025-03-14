@@ -14,6 +14,12 @@ const Panel = styled.div`
   height: 100%;
   overflow-y: auto;
   font-family: 'Noto Sans SC', sans-serif;
+  
+  @media (max-width: 768px) {
+    padding: 10px;
+    height: auto;
+    overflow: visible;
+  }
 `;
 
 const SectionTitle = styled.h3<{ error?: boolean }>`
@@ -23,10 +29,20 @@ const SectionTitle = styled.h3<{ error?: boolean }>`
   border-bottom: 1px solid ${props => props.error ? '#D13C37' : '#ddd'};
   color: ${props => props.error ? '#D13C37' : '#333'};
   font-family: 'Noto Sans SC', sans-serif;
+  
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+    margin: 0 0 6px 0;
+    padding-bottom: 4px;
+  }
 `;
 
 const ControlGroup = styled.div`
   margin-bottom: 20px;
+  
+  @media (max-width: 768px) {
+    margin-bottom: 12px;
+  }
 `;
 
 // Format options
@@ -34,6 +50,10 @@ const OptionGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
+  
+  @media (max-width: 768px) {
+    gap: 5px;
+  }
 `;
 
 const OptionButton = styled.div<{ isSelected?: boolean }>`
@@ -50,6 +70,10 @@ const OptionButton = styled.div<{ isSelected?: boolean }>`
   &:hover {
     border-color: #999;
   }
+  
+  @media (max-width: 768px) {
+    padding: 5px 0;
+  }
 `;
 
 const OptionLabel = styled.div<{ isSelected?: boolean }>`
@@ -58,6 +82,11 @@ const OptionLabel = styled.div<{ isSelected?: boolean }>`
   margin-top: 4px;
   color: ${props => props.isSelected ? '#000' : '#666'};
   font-family: 'Noto Sans SC', sans-serif;
+  
+  @media (max-width: 768px) {
+    font-size: 0.7rem;
+    margin-top: 2px;
+  }
 `;
 
 // Format icons
@@ -122,6 +151,10 @@ const ColorOptions = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
+  
+  @media (max-width: 768px) {
+    gap: 5px;
+  }
 `;
 
 const ColorSwatch = styled.div<{ color: string; isSelected: boolean }>`
@@ -136,6 +169,10 @@ const ColorSwatch = styled.div<{ color: string; isSelected: boolean }>`
   &:hover {
     border-color: #999;
   }
+  
+  @media (max-width: 768px) {
+    border-width: 1px;
+  }
 `;
 
 const ColorLabel = styled.div<{ isSelected?: boolean }>`
@@ -144,6 +181,11 @@ const ColorLabel = styled.div<{ isSelected?: boolean }>`
   margin-top: 4px;
   color: ${props => props.isSelected ? '#000' : '#666'};
   font-family: 'Noto Sans SC', sans-serif;
+  
+  @media (max-width: 768px) {
+    font-size: 0.65rem;
+    margin-top: 2px;
+  }
 `;
 
 // Slider options
@@ -151,6 +193,10 @@ const SliderOptions = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
+  
+  @media (max-width: 768px) {
+    gap: 5px;
+  }
 `;
 
 const SliderOption = styled.div<{ isSelected: boolean }>`
@@ -165,6 +211,11 @@ const SliderOption = styled.div<{ isSelected: boolean }>`
   
   &:hover {
     border-color: #999;
+  }
+  
+  @media (max-width: 768px) {
+    padding: 5px 0;
+    font-size: 0.8rem;
   }
 `;
 
@@ -187,6 +238,12 @@ const GenerateButton = styled.button<{ disabled?: boolean }>`
   
   &:hover {
     background-color: ${props => props.disabled ? '#999' : '#555'};
+  }
+  
+  @media (max-width: 768px) {
+    padding: 8px;
+    margin-top: 10px;
+    font-size: 0.9rem;
   }
 `;
 

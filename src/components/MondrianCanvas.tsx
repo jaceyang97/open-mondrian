@@ -15,6 +15,11 @@ const CanvasContainer = styled.div`
   justify-content: center;
   width: 100%;
   height: 100%;
+  
+  @media (max-width: 768px) {
+    height: auto;
+    min-height: auto;
+  }
 `;
 
 const Canvas = styled.canvas`
@@ -23,6 +28,14 @@ const Canvas = styled.canvas`
   max-width: 100%;
   max-height: 80vh;
   object-fit: contain;
+  
+  @media (max-width: 768px) {
+    max-height: none;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    object-fit: contain;
+  }
 `;
 
 const CanvasControls = styled.div`
@@ -110,6 +123,18 @@ const MondrianCanvas: React.FC<MondrianCanvasProps> = ({ cells, config }) => {
   // Render the canvas whenever cells or config changes
   useEffect(() => {
     renderCanvas();
+    
+    // Add resize event listener
+    const handleResize = () => {
+      renderCanvas();
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    // Clean up
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   }, [cells, config]);
 
   // Function to render the canvas
@@ -119,6 +144,20 @@ const MondrianCanvas: React.FC<MondrianCanvasProps> = ({ cells, config }) => {
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    
+    // Set canvas dimensions
+    canvas.width = config.canvasWidth;
+    canvas.height = config.canvasHeight;
+    
+    // For mobile, adjust the display size while maintaining the internal resolution
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+      const containerWidth = canvas.parentElement?.clientWidth || window.innerWidth - 20;
+      const scale = Math.min(0.8, containerWidth / config.canvasWidth);
+      canvas.style.width = `${config.canvasWidth * scale}px`;
+      canvas.style.height = `${config.canvasHeight * scale}px`;
+      canvas.style.maxHeight = 'none';
+    }
 
     // Set canvas background to white
     ctx.fillStyle = '#FFFFFF';
