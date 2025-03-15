@@ -65,3 +65,7 @@ MIT License
 ## 🙏 Acknowledgments
 
 Inspired by [mondriangenerator.io](https://www.mondriangenerator.io/) and the works of Piet Mondrian, of course.
+
+
+## TODO
+- [ ] If a color is selected, then it must be used in the composition
