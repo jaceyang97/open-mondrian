@@ -88,11 +88,8 @@ const getRandomColor = (palette: string[], colorProbability: number, prominentCo
   }
   
   // If a prominent color is set and it's in the palette (not the background color)
-  if (prominentColor && palette.includes(prominentColor) && prominentColor !== palette[0]) {
-    // Use the prominentColorBoost to determine if we should use the prominent color
-    if (Math.random() < prominentColorBoost) {
-      return prominentColor;
-    }
+  if (prominentColor && prominentColor !== palette[0] && Math.random() < prominentColorBoost) {
+    return prominentColor;
   }
   
   // Pick a random color from the rest of the palette
@@ -102,12 +99,24 @@ const getRandomColor = (palette: string[], colorProbability: number, prominentCo
 
 // Function to find the largest cell in an array of cells
 const findLargestCell = (cells: Cell[]): Cell => {
-  return cells.reduce((largest, current) => {
-    const largestArea = largest.width * largest.height;
-    const currentArea = current.width * current.height;
-    return currentArea > largestArea ? current : largest;
-  }, cells[0]);
+  let maxArea = 0;
+  let largestCell = cells[0];
+  
+  for (const cell of cells) {
+    const area = cell.width * cell.height;
+    if (area > maxArea) {
+      maxArea = area;
+      largestCell = cell;
+    }
+  }
+  
+  return largestCell;
 };
+
+// Helper function to create a cell
+const createCell = (x: number, y: number, width: number, height: number, color: string = ''): Cell => ({
+  x, y, width, height, color
+});
 
 // Function to split a cell horizontally or vertically
 const splitCell = (
@@ -125,242 +134,149 @@ const splitCell = (
       Math.random() > config.splitProbability
     )
   ) {
-    return [{ ...cell, color: getRandomColor(config.colorPalette, config.colorProbability, config.prominentColor, config.prominentColorBoost) }];
+    cell.color = getRandomColor(config.colorPalette, config.colorProbability, config.prominentColor, config.prominentColorBoost);
+    return [cell];
   }
 
-  // Decide whether to split into 2 or 4 parts
-  // Higher chance of 4-way split for larger cells or at lower depths
+  // Pre-calculate common values
+  const minCellSize3x = config.minCellSize * 3;
   const shouldSplitFourWay = 
-    (cell.width > config.minCellSize * 3 && 
-     cell.height > config.minCellSize * 3 &&
-     depth < config.maxDepth - 1 && 
-     Math.random() < 0.4); // 40% chance for eligible cells
+    cell.width > minCellSize3x && 
+    cell.height > minCellSize3x &&
+    depth < config.maxDepth - 1 && 
+    Math.random() < 0.4;
   
   if (shouldSplitFourWay) {
-    // Split into 4 parts - first determine horizontal and vertical split points
+    // Calculate split points once
+    const hSplitRatio = Math.random() < 0.5 ? 
+      (Math.random() < 0.5 ? 1/3 : 2/3) : 
+      0.5;
     
-    // Horizontal split - choose between 1/2 or 1/3 split
-    const useOneThirdHSplit = Math.random() < 0.5; // 50% chance for 1/3 split
-    const hSplitRatio = useOneThirdHSplit ? 
-      (Math.random() < 0.5 ? 1/3 : 2/3) : // Either 1/3 or 2/3
-      0.5; // 1/2 split
+    const vSplitRatio = Math.random() < 0.5 ? 
+      (Math.random() < 0.5 ? 1/3 : 2/3) : 
+      0.5;
     
     const minX = cell.x + config.minCellSize;
     const maxX = cell.x + cell.width - config.minCellSize;
-    const preferredHSplit = cell.x + Math.floor(cell.width * hSplitRatio);
-    const splitX = Math.max(minX, Math.min(maxX, preferredHSplit));
-    
-    // Vertical split - choose between 1/2 or 1/3 split
-    const useOneThirdVSplit = Math.random() < 0.5; // 50% chance for 1/3 split
-    const vSplitRatio = useOneThirdVSplit ? 
-      (Math.random() < 0.5 ? 1/3 : 2/3) : // Either 1/3 or 2/3
-      0.5; // 1/2 split
-    
     const minY = cell.y + config.minCellSize;
     const maxY = cell.y + cell.height - config.minCellSize;
-    const preferredVSplit = cell.y + Math.floor(cell.height * vSplitRatio);
-    const splitY = Math.max(minY, Math.min(maxY, preferredVSplit));
     
-    // Create four new cells
-    const topLeftCell: Cell = {
-      x: cell.x,
-      y: cell.y,
-      width: splitX - cell.x,
-      height: splitY - cell.y,
-      color: ''
-    };
+    const splitX = Math.max(minX, Math.min(maxX, cell.x + Math.floor(cell.width * hSplitRatio)));
+    const splitY = Math.max(minY, Math.min(maxY, cell.y + Math.floor(cell.height * vSplitRatio)));
     
-    const topRightCell: Cell = {
-      x: splitX,
-      y: cell.y,
-      width: cell.x + cell.width - splitX,
-      height: splitY - cell.y,
-      color: ''
-    };
-    
-    const bottomLeftCell: Cell = {
-      x: cell.x,
-      y: splitY,
-      width: splitX - cell.x,
-      height: cell.y + cell.height - splitY,
-      color: ''
-    };
-    
-    const bottomRightCell: Cell = {
-      x: splitX,
-      y: splitY,
-      width: cell.x + cell.width - splitX,
-      height: cell.y + cell.height - splitY,
-      color: ''
-    };
-    
-    // Recursively split the new cells
-    return [
-      ...splitCell(topLeftCell, config, depth + 1),
-      ...splitCell(topRightCell, config, depth + 1),
-      ...splitCell(bottomLeftCell, config, depth + 1),
-      ...splitCell(bottomRightCell, config, depth + 1)
+    // Create four cells at once
+    const cells = [
+      createCell(cell.x, cell.y, splitX - cell.x, splitY - cell.y),
+      createCell(splitX, cell.y, cell.x + cell.width - splitX, splitY - cell.y),
+      createCell(cell.x, splitY, splitX - cell.x, cell.y + cell.height - splitY),
+      createCell(splitX, splitY, cell.x + cell.width - splitX, cell.y + cell.height - splitY)
     ];
-  } else {
-    // Decide whether to split horizontally or vertically
-    // For more balanced compositions, consider the aspect ratio of the cell
-    const aspectRatio = cell.width / cell.height;
-    const splitHorizontally = aspectRatio > 1.3; // Prefer splitting horizontally if wider
-    const splitVertically = aspectRatio < 0.7;   // Prefer splitting vertically if taller
     
-    // If aspect ratio is close to 1 (square-ish), choose randomly
-    const shouldSplitHorizontally = splitHorizontally || 
-      (!splitVertically && Math.random() > 0.5);
+    // Recursively split all cells
+    return cells.reduce((acc, c) => [...acc, ...splitCell(c, config, depth + 1)], [] as Cell[]);
+  } else {
+    // Calculate aspect ratio once
+    const aspectRatio = cell.width / cell.height;
+    const shouldSplitHorizontally = aspectRatio > 1.3 || 
+      (aspectRatio >= 0.7 && Math.random() > 0.5);
+    
+    // Calculate split ratio once
+    const splitRatio = Math.random() < 0.5 ? 
+      (Math.random() < 0.5 ? 1/3 : 2/3) : 
+      0.5;
     
     if (shouldSplitHorizontally) {
-      // Choose between 1/2 or 1/3 split
-      const useOneThirdSplit = Math.random() < 0.5; // 50% chance for 1/3 split
-      const splitRatio = useOneThirdSplit ? 
-        (Math.random() < 0.5 ? 1/3 : 2/3) : // Either 1/3 or 2/3
-        0.5; // 1/2 split
-      
-      // Split position (ensure minimum cell size)
       const minX = cell.x + config.minCellSize;
       const maxX = cell.x + cell.width - config.minCellSize;
-      const preferredSplit = cell.x + Math.floor(cell.width * splitRatio);
+      const splitX = Math.max(minX, Math.min(maxX, cell.x + Math.floor(cell.width * splitRatio)));
       
-      // Ensure the split point is within valid range
-      const splitX = Math.max(minX, Math.min(maxX, preferredSplit));
-      
-      // Create two new cells
-      const leftCell: Cell = {
-        x: cell.x,
-        y: cell.y,
-        width: splitX - cell.x,
-        height: cell.height,
-        color: ''
-      };
-      
-      const rightCell: Cell = {
-        x: splitX,
-        y: cell.y,
-        width: cell.x + cell.width - splitX,
-        height: cell.height,
-        color: ''
-      };
-      
-      // Recursively split the new cells
-      return [
-        ...splitCell(leftCell, config, depth + 1),
-        ...splitCell(rightCell, config, depth + 1)
+      const cells = [
+        createCell(cell.x, cell.y, splitX - cell.x, cell.height),
+        createCell(splitX, cell.y, cell.x + cell.width - splitX, cell.height)
       ];
-    } else {
-      // Choose between 1/2 or 1/3 split
-      const useOneThirdSplit = Math.random() < 0.5; // 50% chance for 1/3 split
-      const splitRatio = useOneThirdSplit ? 
-        (Math.random() < 0.5 ? 1/3 : 2/3) : // Either 1/3 or 2/3
-        0.5; // 1/2 split
       
-      // Split position (ensure minimum cell size)
+      return cells.reduce((acc, c) => [...acc, ...splitCell(c, config, depth + 1)], [] as Cell[]);
+    } else {
       const minY = cell.y + config.minCellSize;
       const maxY = cell.y + cell.height - config.minCellSize;
-      const preferredSplit = cell.y + Math.floor(cell.height * splitRatio);
+      const splitY = Math.max(minY, Math.min(maxY, cell.y + Math.floor(cell.height * splitRatio)));
       
-      // Ensure the split point is within valid range
-      const splitY = Math.max(minY, Math.min(maxY, preferredSplit));
-      
-      // Create two new cells
-      const topCell: Cell = {
-        x: cell.x,
-        y: cell.y,
-        width: cell.width,
-        height: splitY - cell.y,
-        color: ''
-      };
-      
-      const bottomCell: Cell = {
-        x: cell.x,
-        y: splitY,
-        width: cell.width,
-        height: cell.y + cell.height - splitY,
-        color: ''
-      };
-      
-      // Recursively split the new cells
-      return [
-        ...splitCell(topCell, config, depth + 1),
-        ...splitCell(bottomCell, config, depth + 1)
+      const cells = [
+        createCell(cell.x, cell.y, cell.width, splitY - cell.y),
+        createCell(cell.x, splitY, cell.width, cell.y + cell.height - splitY)
       ];
+      
+      return cells.reduce((acc, c) => [...acc, ...splitCell(c, config, depth + 1)], [] as Cell[]);
     }
   }
 };
 
 // Main function to generate a Mondrian composition
 export const generateMondrian = (config: MondrianConfig = defaultConfig): Cell[] => {
-  // Start with a single cell representing the entire canvas
-  const initialCell: Cell = {
-    x: 0,
-    y: 0,
-    width: config.canvasWidth,
-    height: config.canvasHeight,
-    color: ''
-  };
-  
-  // Split the initial cell recursively
-  let cells = splitCell(initialCell, config);
+  // Start with a single cell
+  let cells = splitCell(createCell(0, 0, config.canvasWidth, config.canvasHeight), config);
   
   // Ensure minimum number of splits based on complexity
   const minSplits = config.minSplits || 
-    (config.maxDepth <= 2 ? 2 : 
-     config.maxDepth >= 6 ? 10 : 5);
+    (config.maxDepth <= 2 ? 2 : config.maxDepth >= 6 ? 10 : 5);
   
   // If we don't have enough cells, force more splits on the largest cells
   let attempts = 0;
-  while (cells.length < minSplits && attempts < 10) {
+  const maxAttempts = 10;
+  
+  while (cells.length < minSplits && attempts < maxAttempts) {
     const largestCell = findLargestCell(cells);
-    
-    // Remove the largest cell from the array
-    cells = cells.filter(cell => 
-      cell.x !== largestCell.x || 
-      cell.y !== largestCell.y || 
-      cell.width !== largestCell.width || 
-      cell.height !== largestCell.height
+    const largestCellIndex = cells.findIndex(cell => 
+      cell.x === largestCell.x && 
+      cell.y === largestCell.y && 
+      cell.width === largestCell.width && 
+      cell.height === largestCell.height
     );
     
-    // Force split the largest cell and add the resulting cells
+    // Split the largest cell
     const newCells = splitCell(
-      { ...largestCell, color: '' }, // Reset color for splitting
+      { ...largestCell, color: '' },
       config,
-      0, // Reset depth for this split
-      true // Force split
+      0,
+      true
     );
     
-    cells = [...cells, ...newCells];
+    // Replace the largest cell with new cells
+    cells.splice(largestCellIndex, 1, ...newCells);
     attempts++;
   }
   
-  // Ensure we have some colored cells based on complexity
-  const coloredCellsCount = cells.filter(cell => cell.color !== config.colorPalette[0]).length;
-  const minColoredCells = Math.max(1, Math.floor(minSplits * config.colorProbability * 0.8));
+  // Get non-white colors once
+  const selectedColors = config.colorPalette.filter(color => color !== '#FFFFFF');
   
-  if (coloredCellsCount < minColoredCells) {
-    // Sort cells by size (largest first)
-    const sortedCells = [...cells].sort((a, b) => 
-      (b.width * b.height) - (a.width * a.height)
-    );
+  if (selectedColors.length > 0) {
+    // Color all cells at once
+    cells.forEach(cell => {
+      cell.color = getRandomColor(config.colorPalette, config.colorProbability, config.prominentColor, config.prominentColorBoost);
+    });
     
-    // Force color some of the larger cells
-    for (let i = 0; i < Math.min(minColoredCells, sortedCells.length); i++) {
-      if (sortedCells[i].color === config.colorPalette[0]) {
-        // Find this cell in our original array
-        const cellIndex = cells.findIndex(cell => 
-          cell.x === sortedCells[i].x && 
-          cell.y === sortedCells[i].y && 
-          cell.width === sortedCells[i].width && 
-          cell.height === sortedCells[i].height
-        );
-        
-        if (cellIndex !== -1) {
-          // Pick a random non-white color
-          const colorIndex = getRandomInt(1, config.colorPalette.length - 1);
-          cells[cellIndex].color = config.colorPalette[colorIndex];
+    // Track missing colors
+    const usedColors = new Set(cells.map(cell => cell.color));
+    const missingColors = selectedColors.filter(color => !usedColors.has(color));
+    
+    // Handle missing colors
+    if (missingColors.length > 0) {
+      // Get all white cells once
+      const whiteCellIndices = cells.reduce((acc, cell, index) => {
+        if (cell.color === '#FFFFFF') acc.push(index);
+        return acc;
+      }, [] as number[]);
+      
+      // Assign missing colors to random white cells
+      missingColors.forEach(color => {
+        if (whiteCellIndices.length > 0) {
+          const randomWhiteCellIndex = whiteCellIndices.splice(
+            Math.floor(Math.random() * whiteCellIndices.length), 
+            1
+          )[0];
+          cells[randomWhiteCellIndex].color = color;
         }
-      }
+      });
     }
   }
   
