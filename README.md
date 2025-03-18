@@ -68,4 +68,6 @@ Inspired by [mondriangenerator.io](https://www.mondriangenerator.io/) and the wo
 
 
 ## TODO
-- [ ] If a color is selected, then it must be used in the composition
+- [√] If a color is selected, then it must be used in the composition
+- [ ] Add line colors
+- [ ] Desaturate effect for unselected colors
